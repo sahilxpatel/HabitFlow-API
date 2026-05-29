@@ -8,6 +8,9 @@ dayjs.extend(utc);
 
 class HabitService {
   async createHabit(userId: string, data: any) {
+    if (data.tags && Array.isArray(data.tags)) {
+      data.tags = data.tags.map((t: string) => t.toLowerCase().trim());
+    }
     const habit = await Habit.create({
       ...data,
       userId,
@@ -20,7 +23,8 @@ class HabitService {
     const query: any = { userId };
     
     if (tag) {
-      query.tags = { $in: [tag] };
+      const tagsArray = Array.isArray(tag) ? tag : [tag];
+      query.tags = { $in: tagsArray };
     }
 
     const skip = (page - 1) * limit;
@@ -62,6 +66,9 @@ class HabitService {
   }
 
   async updateHabit(userId: string, habitId: string, data: any) {
+    if (data.tags && Array.isArray(data.tags)) {
+      data.tags = data.tags.map((t: string) => t.toLowerCase().trim());
+    }
     const habit = await Habit.findOneAndUpdate(
       { _id: habitId, userId },
       data,
