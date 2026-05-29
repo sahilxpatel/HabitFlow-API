@@ -1,5 +1,10 @@
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import Habit from '../../models/Habit.model';
 import TrackingLog from '../../models/TrackingLog.model';
+import { calculateStreak } from '../../utils/streakCalculator';
+
+dayjs.extend(utc);
 
 class HabitService {
   async createHabit(userId: string, data: any) {
@@ -41,7 +46,19 @@ class HabitService {
       error.status = 404;
       throw error;
     }
-    return habit;
+
+    const from = dayjs().utc().subtract(30, 'day').startOf('day').toDate();
+    const to = dayjs().utc().endOf('day').toDate();
+
+    const logs = await TrackingLog.find({
+      habitId,
+      completedOn: { $gte: from, $lte: to }
+    }).sort({ completedOn: -1 });
+
+    const dates = logs.map(log => log.completedOn);
+    const streak = calculateStreak(dates);
+
+    return { ...habit.toObject(), streak };
   }
 
   async updateHabit(userId: string, habitId: string, data: any) {
