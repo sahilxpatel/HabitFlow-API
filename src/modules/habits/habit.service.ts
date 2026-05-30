@@ -3,6 +3,7 @@ import utc from 'dayjs/plugin/utc';
 import Habit from '../../models/Habit.model';
 import TrackingLog from '../../models/TrackingLog.model';
 import { calculateStreak } from '../../utils/streakCalculator';
+import { AppError } from '../../utils/AppError';
 
 dayjs.extend(utc);
 
@@ -52,9 +53,7 @@ class HabitService {
   async getSingleHabit(userId: string, habitId: string) {
     const habit = await Habit.findOne({ _id: habitId, userId });
     if (!habit) {
-      const error: any = new Error('Habit not found');
-      error.status = 404;
-      throw error;
+      throw new AppError('Habit not found', 404);
     }
 
     const from = dayjs().utc().subtract(30, 'day').startOf('day').toDate();
@@ -82,9 +81,7 @@ class HabitService {
     );
 
     if (!habit) {
-      const error: any = new Error('Habit not found');
-      error.status = 404;
-      throw error;
+      throw new AppError('Habit not found', 404);
     }
 
     return habit;
@@ -93,9 +90,7 @@ class HabitService {
   async deleteHabit(userId: string, habitId: string) {
     const habit = await Habit.findOneAndDelete({ _id: habitId, userId });
     if (!habit) {
-      const error: any = new Error('Habit not found');
-      error.status = 404;
-      throw error;
+      throw new AppError('Habit not found', 404);
     }
 
     // Cascade delete TrackingLogs

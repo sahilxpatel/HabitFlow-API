@@ -1,27 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import authService from './auth.service';
+import { asyncHandler } from '../../utils/asyncHandler';
+import { sendSuccess } from '../../utils/apiResponse';
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = await authService.register(req.body);
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      data: user
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const register = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const user = await authService.register(req.body);
+  sendSuccess(res, 201, 'User registered successfully', { user });
+});
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const token = await authService.login(req.body);
-    res.status(200).json({
-      success: true,
-      token
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const token = await authService.login(req.body);
+  sendSuccess(res, 200, 'Login successful', { token });
+});

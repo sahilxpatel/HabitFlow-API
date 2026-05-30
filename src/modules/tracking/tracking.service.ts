@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import Habit from '../../models/Habit.model';
 import TrackingLog from '../../models/TrackingLog.model';
+import { AppError } from '../../utils/AppError';
 
 dayjs.extend(utc);
 
@@ -9,9 +10,7 @@ class TrackingService {
   async markAsDone(userId: string, habitId: string) {
     const habit = await Habit.findOne({ _id: habitId, userId });
     if (!habit) {
-      const error: any = new Error('Habit not found');
-      error.status = 404;
-      throw error;
+      throw new AppError('Habit not found', 404);
     }
 
     const today = dayjs().utc().startOf('day').toDate();
@@ -25,9 +24,7 @@ class TrackingService {
       return log;
     } catch (error: any) {
       if (error.code === 11000) {
-        const conflictError: any = new Error('Already tracked today');
-        conflictError.status = 409;
-        throw conflictError;
+        throw new AppError('Already tracked today', 409);
       }
       throw error;
     }
@@ -36,9 +33,7 @@ class TrackingService {
   async getHistory(userId: string, habitId: string) {
     const habit = await Habit.findOne({ _id: habitId, userId });
     if (!habit) {
-      const error: any = new Error('Habit not found');
-      error.status = 404;
-      throw error;
+      throw new AppError('Habit not found', 404);
     }
 
     const from = dayjs().utc().subtract(7, 'day').startOf('day').toDate();

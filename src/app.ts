@@ -5,6 +5,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 
 import { apiLimiter } from './middlewares/rateLimiter.middleware';
 import { protect } from './middlewares/auth.middleware';
+import { errorHandler } from './middlewares/errorHandler.middleware';
 
 import authRoutes from './modules/auth/auth.routes';
 import habitRoutes from './modules/habits/habit.routes';
@@ -42,13 +43,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// 7. Global Error Handler - must be the very last middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal Server Error',
-  });
-});
+// 7. Global Error Handler
+app.use(errorHandler);
 
 export default app;

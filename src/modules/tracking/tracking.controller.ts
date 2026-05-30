@@ -1,20 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import trackingService from './tracking.service';
+import { asyncHandler } from '../../utils/asyncHandler';
+import { sendSuccess } from '../../utils/apiResponse';
 
-export const markAsDone = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const log = await trackingService.markAsDone(req.user.userId, req.params.id as string);
-    res.status(201).json({ success: true, data: log });
-  } catch (error) {
-    next(error);
-  }
-};
+export const markAsDone = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const log = await trackingService.markAsDone(req.user.userId, req.params.id as string);
+  sendSuccess(res, 201, 'Habit marked as done', log);
+});
 
-export const getHistory = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const logs = await trackingService.getHistory(req.user.userId, req.params.id as string);
-    res.status(200).json({ success: true, data: logs });
-  } catch (error) {
-    next(error);
-  }
-};
+export const getHistory = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const logs = await trackingService.getHistory(req.user.userId, req.params.id as string);
+  sendSuccess(res, 200, 'History fetched successfully', logs);
+});

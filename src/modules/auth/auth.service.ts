@@ -1,14 +1,13 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User.model';
+import { AppError } from '../../utils/AppError';
 
 class AuthService {
   async register(data: any) {
     const existingUser = await User.findOne({ email: data.email });
     if (existingUser) {
-      const error: any = new Error('Email already registered');
-      error.status = 409;
-      throw error;
+      throw new AppError('Email already registered', 409);
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -30,16 +29,12 @@ class AuthService {
     // However, since it is not, findOne will return it anyway, but we explicitly request it to match instructions.
     const user = await User.findOne({ email: data.email }).select('+password');
     if (!user) {
-      const error: any = new Error('Invalid credentials');
-      error.status = 401;
-      throw error;
+      throw new AppError('Invalid credentials', 401);
     }
 
     const isMatch = await bcrypt.compare(data.password, user.password);
     if (!isMatch) {
-      const error: any = new Error('Invalid credentials');
-      error.status = 401;
-      throw error;
+      throw new AppError('Invalid credentials', 401);
     }
 
     const token = jwt.sign(
