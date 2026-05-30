@@ -34,12 +34,18 @@ class HabitService {
       Habit.countDocuments(query)
     ]);
 
+    const totalPages = Math.ceil(total / limit);
+
     return {
       habits,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      }
     };
   }
 
