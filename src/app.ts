@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 
-import { globalLimiter } from './middlewares/rateLimiter.middleware';
+import { apiLimiter } from './middlewares/rateLimiter.middleware';
 import { protect } from './middlewares/auth.middleware';
 
 import authRoutes from './modules/auth/auth.routes';
@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 3. Rate Limiter - global middleware
-app.use(globalLimiter);
+app.use(apiLimiter);
 
 // 4. Mount auth routes
 app.use('/api/auth', authRoutes);
