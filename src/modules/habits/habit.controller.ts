@@ -21,7 +21,7 @@ export const getHabits = async (req: Request, res: Response, next: NextFunction)
 
 export const getSingleHabit = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const habit = await habitService.getSingleHabit(req.user.userId, req.params.id);
+    const habit = await habitService.getSingleHabit(req.user.userId, req.params.id as string);
     res.status(200).json({ success: true, data: habit });
   } catch (error) {
     next(error);
@@ -30,7 +30,7 @@ export const getSingleHabit = async (req: Request, res: Response, next: NextFunc
 
 export const updateHabit = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const habit = await habitService.updateHabit(req.user.userId, req.params.id, req.body);
+    const habit = await habitService.updateHabit(req.user.userId, req.params.id as string, req.body);
     res.status(200).json({ success: true, data: habit });
   } catch (error) {
     next(error);
@@ -39,7 +39,7 @@ export const updateHabit = async (req: Request, res: Response, next: NextFunctio
 
 export const deleteHabit = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await habitService.deleteHabit(req.user.userId, req.params.id);
+    const result = await habitService.deleteHabit(req.user.userId, req.params.id as string);
     res.status(200).json({ success: true, message: result.message });
   } catch (error) {
     next(error);
